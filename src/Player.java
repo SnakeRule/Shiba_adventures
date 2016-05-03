@@ -40,6 +40,12 @@ public class Player extends JPanel
     ImageObserver observer;
 
 
+    public Player(int StartX, int StartY)
+    {
+        x = StartX;
+        y = StartY;
+    }
+
     public void LoadImage(int animation)
     {
         if(animation == 1)
@@ -157,10 +163,9 @@ public class Player extends JPanel
         if(key == KeyEvent.VK_UP)
         {
             if(jumping == false && pressingUp == false) {
-                JumpSpeed = 15;
+                JumpSpeed = 17;
                 pressingUp = true;
                 up = true;
-                System.out.print("JUMP");
                 Jump();
             }
         }
@@ -177,7 +182,6 @@ public class Player extends JPanel
 
         if(key == KeyEvent.VK_RIGHT)
         {
-            System.out.print("PRESSING RIGHT");
             right = true;
         }
     }
@@ -188,7 +192,6 @@ public class Player extends JPanel
 
         if(key == KeyEvent.VK_UP)
         {
-            System.out.print("PERSE");
             pressingUp = false;
             up = false;
         }
@@ -246,7 +249,7 @@ public class Player extends JPanel
             jumping = true;
             JumpTickCounter++;
             y -= JumpSpeed;
-            if(JumpTickCounter >= 2)
+            if(JumpTickCounter >= 3)
             {
                 JumpTickCounter = 0;
                 JumpSpeed -= 1;

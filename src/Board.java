@@ -9,6 +9,7 @@ import java.util.ArrayList;
 public class Board extends JPanel implements ActionListener
 {
     private Player player;
+    public Level level;
     private Object ground;
     private Rectangle playerRect;
     private Rectangle objectRect;
@@ -24,28 +25,20 @@ public class Board extends JPanel implements ActionListener
 
     public Board()
     {
-        objects = new ArrayList<Object>();
-        player = new Player();
-        ground = new Object("1", 0, 655);
-        objects.add(ground);
-        ground = new Object("1", 400, 300);
-        objects.add(ground);
-        ground = new Object("2", 300, 550);
-        objects.add(ground);
-        ground = new Object("2", 900, 400);
-        objects.add(ground);
-        bg = new ImageIcon("BackGround.jpg");
-        backGround = bg.getImage();
+        level = new Level();
+        level.LoadLevel(1);
+        level.BuildLevel();
         initBoard();
     }
 
     private void initBoard()
     {
+        player = level.player;
+        objects = level.objects;
+        backGround = level.backGround;
+        bg = level.bg;
         int animation = 1;
-        add(button);
         player.LoadImage(animation);
-        button.setLabel("SHIBE");
-        button.setFocusable(false);
 
         addKeyListener(new TAdapter());
         setFocusable(true);
