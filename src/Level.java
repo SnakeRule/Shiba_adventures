@@ -13,6 +13,8 @@ public class Level
     public ImageIcon bg;
     public Image backGround;
     public ArrayList<Object> objects;
+    public Enemy enemy;
+    public ArrayList<Enemy> enemies;
     public Player player;
     public Object ground;
     String LevelData;
@@ -27,14 +29,15 @@ public class Level
         char blockData;
         int f = 0;
         objects = new ArrayList<Object>();
+        enemies = new ArrayList<Enemy>();
 
-        for(row = 0; row < 17; row++)
+        for(row = 0; row < 27; row++)
         {
             y = row * 40;
-            for(field = 0; field < 12; field++)
+            for(field = 0; field < 24; field++)
             {
                 blockData = LevelData.charAt(f);
-                x = field * 127;
+                x = field * 128;
                 switch(LevelData.charAt(f))
                 {
                     case '0':
@@ -54,6 +57,26 @@ public class Level
                         f++;
                         break;
                     }
+                    case '2':
+                    {
+                        ground = new Object("3", x, y);
+                        objects.add(ground);
+                        f++;
+                        break;
+                    }
+                    case 'P':
+                    {
+                        player = new Player(x,y);
+                        f++;
+                        break;
+                    }
+                    case 'E':
+                    {
+                        enemy = new Enemy(x, y);
+                        enemies.add(enemy);
+                        f++;
+                        break;
+                    }
                     default:
                     {
                         f++;
@@ -62,15 +85,14 @@ public class Level
                 }
             }
         }
-        player = new Player(50, 50);
-        bg = new ImageIcon("BackGround.jpg");
+        bg = new ImageIcon("Resources\\BackGround.jpg");
         backGround = bg.getImage();
     }
 
     public void LoadLevel(int levelNumber)
     {
         try {
-            scanner = new Scanner( new File("Level"+levelNumber+".txt") );
+            scanner = new Scanner( new File("Resources\\Level"+levelNumber+".txt") );
             LevelData = scanner.useDelimiter("\\A").next();
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -1,188 +1,64 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
 import java.awt.image.ImageObserver;
+import java.util.ArrayList;
 
 /**
  * Created by Jere on 29.4.2016.
  */
-public class Player extends JPanel
+public class Player extends Character_Base
 {
-    private Image shiba; // This contains the player image
-    private boolean pressingUp; // Used for detecting when the up button is pressed
-
-    // Here are the y and x coordinate speeds
-    private int yspeed = 5;
-    private int xspeed = 8;
-
-    public int PlayerDirection = 2;
-    private Boolean jumping = false;
-    public double GravitySpeed = 0;
-    double JumpSpeed = 0;
-    int JumpTickCounter;
-    public Boolean hittingGround = false;
-    public Boolean hittingLeft = false;
-    public Boolean hittingRight = false;
-
-    public Boolean hittingGroundCurrentBlock = false;
-    public boolean CollisionTop = false;
-    private int animationCounter;
-    private int x;
-    public int y;
-    private boolean up;
-    private boolean right;
-    private boolean down;
-    private boolean left;
-    ImageIcon sprite;
-    private Rectangle rect;
-    ImageObserver observer;
-
+    public boolean Quake;
 
     public Player(int StartX, int StartY)
     {
-        x = StartX;
-        y = StartY;
+
+        super(StartX, StartY);
+
+        xspeedBase = 7;
     }
 
-    public void LoadImage(int animation)
-    {
-        if(animation == 1)
-        {
-                sprite = new ImageIcon("SHIBA2.png");
-                sprite.setImageObserver(observer);
-                shiba = sprite.getImage();
-        }
-        if(animation == 2)
-        {
-            sprite = new ImageIcon("SHIBA1.png");
-            sprite.setImageObserver(observer);
-            shiba = sprite.getImage();
-        }
-        if(animation == 3)
-        {
-            sprite = new ImageIcon("SHIBA3.png");
-            sprite.setImageObserver(observer);
-            shiba = sprite.getImage();
-        }
-    }
-
-    public int GetX()
-    {
-        return x;
-    }
-
-    public int GetY()
-    {
-        return y;
-    }
-
-    public int GetHeight()
-    {
-        return shiba.getHeight(this);
-    }
-
-    public int GetWidth()
-    {
-        return shiba.getWidth(this);
-    }
-
-    public Image GetImage()
-    {
-        return shiba;
-    }
-    public Rectangle getBounds()
-    {
-        if(PlayerDirection == 2)
-        {
-            return rect = new Rectangle(GetX(), GetY(), GetWidth() - 10, GetHeight());
-        }
-        else
-        {
-            return rect = new Rectangle(GetX(), GetY(), GetWidth() - 10, GetHeight());
-        }
-    }
-
-    public void UpdateSprite()
-    {
-        int animation;
-
-        if(up == true)
-        {
-            Jump();
-            animationCounter++;
-        }
-        if(down == true)
-        {
-            y += yspeed;
-            animationCounter++;
-        }
-        if(left == true)
-        {
-            if(!hittingLeft)
-            {
-                PlayerDirection = 1;
-                xspeed = 7;
-                x -= xspeed;
-                animationCounter++;
-            }
-        }
-        if(right == true)
-        {
-            if(!hittingRight)
-            {
-                PlayerDirection = 2;
-                xspeed = 7;
-                x += xspeed;
-                animationCounter++;
-            }
-        }
-        if(animationCounter >= 0 && animationCounter <= 10)
-        {
-            LoadImage(animation = 1);
-        }
-        if(animationCounter >= 11 && animationCounter <= 20)
-        {
-            LoadImage(animation = 3);
-        }
-        if(animationCounter >= 21 && animationCounter <= 30)
-        {
-            LoadImage(animation = 2);
-        }
-        if(animationCounter >= 30)
-        {
-            animationCounter = 0;
-        }
-    }
 
     public void keyPressed(KeyEvent e)
     {
         int key = e.getKeyCode();
 
-        if(key == KeyEvent.VK_UP)
+        if(key == KeyEvent.VK_W)
         {
-            if(jumping == false && pressingUp == false) {
-                JumpSpeed = 17;
+            if(!jumping && !pressingUp) {
+                JumpSpeed = 14;
                 pressingUp = true;
                 up = true;
                 Jump();
             }
         }
 
-        if(key == KeyEvent.VK_LEFT)
+        if(key == KeyEvent.VK_A)
         {
             left = true;
+            PlayerDirection = 1;
         }
 
-        if(key == KeyEvent.VK_DOWN)
+        if(key == KeyEvent.VK_S)
         {
-            //down = true;
+            down = true;
         }
 
-        if(key == KeyEvent.VK_RIGHT)
+        if(key == KeyEvent.VK_D)
         {
             right = true;
+            PlayerDirection = 2;
+        }
+
+        if(key == KeyEvent.VK_Q)
+        {
+            if(Quake)
+            {
+                Quake = false;
+            }
+            else
+                Quake = true;
         }
     }
 
@@ -190,91 +66,41 @@ public class Player extends JPanel
     {
         int key = e.getKeyCode();
 
-        if(key == KeyEvent.VK_UP)
+        if(key == KeyEvent.VK_W)
         {
             pressingUp = false;
             up = false;
         }
 
-        if(key == KeyEvent.VK_LEFT)
+        if(key == KeyEvent.VK_A)
         {
             left = false;
+            xspeed = 0;
         }
 
-        if(key == KeyEvent.VK_DOWN)
+        if(key == KeyEvent.VK_S)
         {
-            //down = false;
+            down = false;
+            DropDown = false;
         }
-
-        if(key == KeyEvent.VK_RIGHT)
+        if(key == KeyEvent.VK_D)
         {
             right = false;
+            xspeed = 0;
         }
     }
 
-    public void HittingGround(int objecty)
+    public void Shoot(Point MousePosition)
     {
-            y = objecty - shiba.getHeight(observer);
-            hittingGround = true;
-            jumping = false;
-            GravitySpeed = 0;
-            down = false;
-    }
-
-    public void HittingTop()
-    {
-        JumpSpeed = 0;
-        up = false;
-    }
-
-    public void StopRight()
-    {
-        xspeed = 0;
-        hittingRight = true;
-    }
-
-    public void StopLeft()
-    {
-        xspeed = 0;
-        hittingLeft = true;
-    }
-
-    public void Jump()
-    {
-        if(JumpSpeed <= 0)
+        if((PlayerDirection == 1 && MousePosition.getX() < x)) {
+            Bullet bullet = new Bullet(MousePosition, x, y, PlayerDirection);
+            bullets.add(bullet);
+        }
+        else if((PlayerDirection == 2 && MousePosition.getX() > x + GetWidth() - 30))
         {
-            up = false;
-        }
-        if (pressingUp) {
-            jumping = true;
-            JumpTickCounter++;
-            y -= JumpSpeed;
-            if(JumpTickCounter >= 3)
-            {
-                JumpTickCounter = 0;
-                JumpSpeed -= 1;
-            }
-        }
-    }
-
-    public void Gravity()
-    {
-        if(hittingGround == false)
-        {
-            if (GravitySpeed <= 20) {
-                GravitySpeed += 0.6;
-            }
-            y += GravitySpeed;
-        }
-        if(!pressingUp && JumpSpeed > 1)
-        {
-            JumpTickCounter++;
-            if (JumpTickCounter >= 2)
-            {
-                JumpTickCounter = 0;
-                JumpSpeed -= 3;
-            }
-            y -= JumpSpeed;
+            MousePosition.x -= GetWidth();
+            Bullet bullet = new Bullet(MousePosition, x, y, PlayerDirection);
+            bullets.add(bullet);
         }
     }
 }
